@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import RepoList from "./components/repos/RepoList";
 
 const Page = () => {
   return (
-    <div>Pages</div>
-  )
-}
+    <div>
+      <RepoList />
+    </div>
+  );
+};
 
-export default Page
+export default Page;
