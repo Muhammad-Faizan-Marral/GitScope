@@ -15,7 +15,7 @@ const LayoutContainer: React.FC<LayoutContainerProps> = ({ children }) => {
       <Header />
 
       {/* Content wrapper */}
-      <div className="flex gap-4 p-6 items-start">
+      <div className="flex gap-10 p-6 items-start">
         {/* Sidebar: fixed width */}
         <aside className="hidden md:block w-96 bg-[#161f2c] rounded-sm">
           <Sidebar />
