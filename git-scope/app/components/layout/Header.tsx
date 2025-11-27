@@ -19,9 +19,9 @@ const Header = () => {
             stroke="currentColor"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2} // notice number without quotes
               d="M21 21l-4.35-4.35m0 0A7 7 0 104.65 4.65a7 7 0 0012 12z"
             />
           </svg>
@@ -35,9 +35,6 @@ const Header = () => {
         <SettingsIcon />
         <ProfileIcon />
       </div>
-
-
-
     </div>
   );
 };
