@@ -1,10 +1,10 @@
 import React from "react";
-import RepoList from "./components/repos/RepoList";
+import RepoContainer from "./components/repos/RepoContainer";
 
 const Page = () => {
   return (
     <div>
-      <RepoList />
+      <RepoContainer />
     </div>
   );
 };
