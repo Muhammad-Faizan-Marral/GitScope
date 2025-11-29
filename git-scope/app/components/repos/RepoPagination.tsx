@@ -1,107 +1,122 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
+import { useStore } from "@/app/lib/store";
 
 const RepoPagination = () => {
+  const setPage = useStore((s) => s.setPage);
+  const userInfo = useStore((state) => state.userInfo);
+  const perPage = useStore((state) => state.perPage);
+
+  const totalPages = Math.ceil((userInfo?.public_repos ?? 0) / perPage);
+  const maxVisible = 3;
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Sync store with pagination clicks
+  const updatePage = (p: number) => {
+    setCurrentPage(p);
+    setPage(p);
+  };
+
+  // Generate stable pages
+  const getVisiblePages = () => {
+    const pages = [];
+
+    // Always add PAGE 1
+    pages.push(1);
+
+    // Decide left side numbers
+    let left = Math.max(2, currentPage - 1);
+    let right = Math.min(totalPages - 1, currentPage + 1);
+
+    // If near start, show first few pages normally
+    if (currentPage <= maxVisible) {
+      left = 2;
+      right = Math.min(totalPages - 1, maxVisible);
+    }
+
+    // If near end, show last few pages
+    if (currentPage >= totalPages - maxVisible + 1) {
+      left = Math.max(2, totalPages - maxVisible);
+      right = totalPages - 1;
+    }
+
+    // Add left gap
+    if (left > 2) {
+      pages.push("...");
+    }
+
+    // Add middle pages
+    for (let i = left; i <= right; i++) {
+      pages.push(i);
+    }
+
+    // Add right gap
+    if (right < totalPages - 1) {
+      pages.push("...");
+    }
+
+    // Always add LAST page
+    if (totalPages > 1) {
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  const visiblePages = getVisiblePages();
+
+  const goPrev = () => {
+    if (currentPage > 1) updatePage(currentPage - 1);
+  };
+
+  const goNext = () => {
+    if (currentPage < totalPages) updatePage(currentPage + 1);
+  };
+
   return (
-    <div className="flex items-center justify-between ">
-        <h1 className="text-xl ">Showing 1 to 5 out of 13 results </h1>
+    <div className="flex items-center justify-between">
+      <h1 className="text-xl">Showing results…</h1>
+
       <nav className="flex items-center gap-x-1" aria-label="Pagination">
+        {/* PREVIOUS */}
         <button
-          type="button"
-          className="min-h-9.5 min-w-9.5 py-2 px-2.5 inline-flex jusify-center items-center gap-x-2 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
-          aria-label="Previous"
+          title="PREVIOUS_Button"
+          onClick={goPrev}
+          disabled={currentPage === 1}
+          className="min-h-9.5 min-w-9.5 py-2 px-3 rounded-lg"
         >
-          <svg
-            className="shrink-0 size-3.5"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m15 18-6-6 6-6"></path>
-          </svg>
-          <span className="sr-only">Previous</span>
+          &lt;
         </button>
+
+        {/* MAIN PAGINATION */}
         <div className="flex items-center gap-x-1">
-          <button
-            type="button"
-            className="min-h-9.5 min-w-9.5 flex justify-center items-center bg-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-hidden focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-600 dark:text-white dark:focus:bg-neutral-500"
-            aria-current="page"
-          >
-            1
-          </button>
-          <button
-            type="button"
-            className="min-h-9.5 min-w-9.5 flex justify-center items-center text-gray-800 hover:bg-gray-100 py-2 px-3 text-sm rounded-lg focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
-          >
-            2
-          </button>
-          <button
-            type="button"
-            className="min-h-9.5 min-w-9.5 flex justify-center items-center text-gray-800 hover:bg-gray-100 py-2 px-3 text-sm rounded-lg focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
-          >
-            3
-          </button>
-          <div className="hs-tooltip inline-block">
+          {visiblePages.map((item, index) => (
             <button
-              type="button"
-              className="hs-tooltip-toggle group min-h-9.5 min-w-9.5 flex justify-center items-center text-gray-400 hover:text-blue-600 p-2 text-sm rounded-lg focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-500 dark:hover:text-blue-500 dark:focus:bg-white/10"
+              key={index}
+              onClick={() => item !== "..." && updatePage(item)}
+              disabled={item === "..."}
+              className={`min-h-9.5 min-w-9.5 py-2 px-3 rounded-lg
+                ${
+                  item === currentPage
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-400 hover:bg-gray-300"
+                }
+              `}
             >
-              <span className="group-hover:hidden text-xs">•••</span>
-              <svg
-                className="group-hover:block hidden shrink-0 size-5"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="m6 17 5-5-5-5"></path>
-                <path d="m13 17 5-5-5-5"></path>
-              </svg>
-              <span
-                className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-2xs dark:bg-neutral-700"
-                role="tooltip"
-              >
-                Next 4 pages
-              </span>
+              {item}
             </button>
-          </div>
-          <button
-            type="button"
-            className="min-h-9.5 min-w-9.5 flex justify-center items-center text-gray-800 hover:bg-gray-100 py-2 px-3 text-sm rounded-lg focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
-          >
-            8
-          </button>
+          ))}
         </div>
+
+        {/* NEXT */}
         <button
-          type="button"
-          className="min-h-9.5 min-w-9.5 py-2 px-2.5 inline-flex jusify-center items-center gap-x-2 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
-          aria-label="Next"
+          title="NEXT_Button"
+          onClick={goNext}
+          disabled={currentPage === totalPages}
+          className="min-h-9.5 min-w-9.5 py-2 px-3 rounded-lg"
         >
-          <span className="sr-only">Next</span>
-          <svg
-            className="shrink-0 size-3.5"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m9 18 6-6-6-6"></path>
-          </svg>
+          &gt;
         </button>
       </nav>
     </div>
