@@ -2,6 +2,9 @@ import { create } from "zustand";
 import { GithubUser, GithubRepo } from "../types/github";
 
 export interface State {
+  theme: string;
+  setTheme: (u: string) => void;
+
   userInfo: GithubUser | null;
   setUserInfo: (u: GithubUser | null) => void;
 
@@ -25,6 +28,9 @@ export interface State {
 }
 
 export const useStore = create<State>()((set) => ({
+  theme: "",
+  setTheme: (u) => set({ theme: u }),
+
   username: "",
   setUsername: (u) => set({ username: u }),
 

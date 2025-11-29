@@ -5,6 +5,9 @@ import { useStore } from "@/app/lib/store";
 import { ToastContainer, Bounce, toast } from "react-toastify";
 
 export default function SearchBar() {
+  const themeValue = useStore((state) => state.theme);
+  const isDark = themeValue === "Dark";
+
   const [inputValue, setInputValue] = useState<string>("");
 
   const setUserInfo = useStore((s) => s.setUserInfo);
@@ -14,7 +17,6 @@ export default function SearchBar() {
   const setPage = useStore((s) => s.setPage);
   const perPage = useStore((s) => s.perPage);
   const setUsername = useStore((s) => s.setUsername);
-
 
   const notify = () =>
     toast("Input Feild Required!", {
@@ -50,7 +52,6 @@ export default function SearchBar() {
       setUserInfo(user);
       console.log(user);
 
-      
       // Fetch first page repos
       const repoRes = await fetch(
         `/api/github/repo/repos?username=${encodeURIComponent(
@@ -87,7 +88,6 @@ export default function SearchBar() {
       console.log("User input:", inputValue);
       setInputValue("");
       fetchUserAndFirstPage(inputValue.trim());
-    
     }
   };
 
@@ -118,7 +118,9 @@ export default function SearchBar() {
             placeholder="Search user...."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="w-full bg-transparent border border-gray-500 rounded-lg py-2 pl-14 pr-8 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-gray-300"
+            className={`w-full bg-transparent border border-gray-500 rounded-lg py-2 pl-14 pr-8 ${
+              isDark ? "text-gray-300" : "text-black"
+            } placeholder-gray-500 focus:outline-none focus:border-gray-300 `}
           />
         </form>
       </div>

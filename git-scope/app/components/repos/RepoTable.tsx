@@ -66,7 +66,7 @@ const repos = useStore((state) => state.repos);
                   {repos.map((item, index) => {
                     console.log(item);
                     return (
-                      <tr key={index} className="hover:bg-gray-900">
+                      <tr key={index} className="hover:bg-gray-600">
                         <td className="p-2 sm:p-2.5 py-4 sm:py-7 whitespace-nowrap text-xs sm:text-sm lg:text-lg font-medium text-black">
                           {item.name}
                         </td>
